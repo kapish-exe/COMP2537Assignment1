@@ -40,6 +40,11 @@ var mongoStore = MongoStore.create({
     }
 })
 
+
+app.use(express.static(__dirname + "/public"));
+// app.use(express.static(__dirname + "/public/img2.jpg"));
+// app.use(express.static(__dirname + "/public/img3.jpg"));
+
 app.use(session({
     secret: node_session_secret,
     store: mongoStore, //default is memory store 
@@ -239,23 +244,23 @@ app.get("/members", (req, res) => {
 
 
     var html = `
-    Hello, ${req.session.name}!`
+    Hello, ${req.session.name}!
+    <br><br><br>`
 
     if (randomNumber == 1) {
-        res.send(html + `<img src ='./public/img1.jpeg  >`);
+             res.send(html + `<img style = "height: 250px; width: 250px object-fit: cover" src ='img1.jpeg'>`);
     }
     else if (randomNumber == 2) {
-        res.send(html + `<img src="./public/img2.jpg">`);
+        res.send(html + `<img style = "height: 250px; width: 250px object-fit: cover" src="img2.jpg">`);
     }
     else if (randomNumber == 3){
-        res.send(html + `<img src="./public/img3.jpg">`)
+        res.send(html + `<img style = "height: 250px; width: 250px object-fit: cover" src="img3.jpg">`)
     }
     
 
 
 })
 
-app.use(express.static(__dirname + "/public"));
 
 app.get("*", (req, res) => {
     res.status(404);
