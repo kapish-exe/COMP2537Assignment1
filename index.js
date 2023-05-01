@@ -14,8 +14,7 @@ const app = express();
 const Joi = require("joi");
 
 
-const expireTime = 60 * 60 * 1000; //expires after 1 day  (hours * minutes * seconds * millis)
-var checklogin = false;
+const expireTime = 60 * 60 * 1000; 
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -25,7 +24,6 @@ const mongodb_database = process.env.MONGODB_DATABASE;
 const mongodb_session_secret = process.env.MONGODB_SESSION_SECRET;
 
 const node_session_secret = process.env.NODE_SESSION_SECRET;
-/* END secret section */
 
 var { database } = include('databaseConnection');
 
@@ -42,27 +40,25 @@ var mongoStore = MongoStore.create({
 
 
 app.use(express.static(__dirname + "/public"));
-// app.use(express.static(__dirname + "/public/img2.jpg"));
-// app.use(express.static(__dirname + "/public/img3.jpg"));
+
 
 app.use(session({
     secret: node_session_secret,
-    store: mongoStore, //default is memory store 
+    store: mongoStore, 
     saveUninitialized: false,
     resave: true
 }
 ));
+req.session.checklogin = false;
 
 app.get('/', (req, res) => {
-    if (checklogin) {
+    if (req.session.checklogin) {
         res.redirect("/loggedin")
     } else {
         let signup = "<a href='/signup'><button type='button' style='display: block'>Sign up</button></a>";
         let login = "<a href='/login'><button type='button'>Login</button></a>";
         res.send(signup + login)
     }
-
-
 });
 
 app.get("/signup", (req, res) => {
@@ -103,9 +99,6 @@ app.get('/miss', (req, res) => {
     res.send(html);
 });
 
-
-
-
 app.get('/login', (req, res) => {
     var html = `
     log in
@@ -124,20 +117,6 @@ app.post('/submitUser', async (req, res) => {
     var password = req.body.password;
     var newsession = req.session;
     req.session.name = name;
-
-    // if(!name){
-    //     res.redirect('/miss?missing=1')
-    //     return;
-    // }
-    // if (!email) {
-    //     res.redirect('/miss?missing=2');
-    //     return;
-    // }
-    // if(!password){
-    //     res.redirect('/miss?missing=3')
-    //     return;
-    // }
-
     const schema = Joi.object(
         {
             name: Joi.string().alphanum().max(20).required(),
@@ -157,8 +136,6 @@ app.post('/submitUser', async (req, res) => {
     await userCollection.insertOne({ name: name, email: email, password: hashedPassword });
     console.log("Inserted user");
 
-
-    // var html = "successfully created user";
     res.redirect("/members");
 });
 
@@ -193,7 +170,7 @@ app.post('/loggingin', async (req, res) => {
         req.session.cookie.maxAge = expireTime;
 
 
-        checklogin = true;
+        req.session.checklogin = true;
         res.redirect('/loggedIn');
         return;
     }
@@ -212,7 +189,6 @@ app.get('/loggedin', (req, res) => {
         res.redirect('/login');
     }
 
-    // let result = userCollection.findOne({}, {projection: {_id: 0, name: 1}}).toArray()
     var html = `
     Hello, ${req.session.name}!
     <a href='/members'><button style='display: block'>Go to Members Area</button></a>
@@ -242,7 +218,6 @@ app.get("/members", (req, res) => {
     const randomNumber = possibleValues[randomIndex];
     console.log(randomNumber);
 
-
     var html = `
     Hello, ${req.session.name}!
     <br><br><br>`
@@ -256,11 +231,7 @@ app.get("/members", (req, res) => {
     else if (randomNumber == 3){
         res.send(html + `<img style = "height: 250px; width: 250px object-fit: cover" src="img3.jpg">`)
     }
-    
-
-
 })
-
 
 app.get("*", (req, res) => {
     res.status(404);
