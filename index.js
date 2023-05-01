@@ -117,21 +117,21 @@ app.post('/submitUser', async (req, res) => {
     var name = req.body.name;
     var email = req.body.email;
     var password = req.body.password;
-    // var newsession = req.session;
+    var newsession = req.session;
     req.session.name = name;
 
-    if(!name){
-        res.redirect('/miss?missing=1')
-        return;
-    }
-    if (!email) {
-        res.redirect('/miss?missing=2');
-        return;
-    }
-    if(!password){
-        res.redirect('/miss?missing=3')
-        return;
-    }
+    // if(!name){
+    //     res.redirect('/miss?missing=1')
+    //     return;
+    // }
+    // if (!email) {
+    //     res.redirect('/miss?missing=2');
+    //     return;
+    // }
+    // if(!password){
+    //     res.redirect('/miss?missing=3')
+    //     return;
+    // }
 
     const schema = Joi.object(
         {
@@ -143,7 +143,7 @@ app.post('/submitUser', async (req, res) => {
     const validationResult = schema.validate({ name, email, password });
     if (validationResult.error != null) {
         console.log(validationResult.error);
-        // res.redirect("/signup");
+        res.redirect("/signup");
         return;
     }
 
@@ -227,7 +227,8 @@ app.get('/logout', (req, res) => {
 
 app.get("/members", (req, res) => {
     if (!req.session.authenticated) {
-        res.redirect('/');
+        res.redirect('/signup');
+        return;
     }
     console.log(req.session)
 
@@ -241,7 +242,7 @@ app.get("/members", (req, res) => {
     Hello, ${req.session.name}!`
 
     if (randomNumber == 1) {
-        res.send(html + `<img src="D:\School\Projects 1\COMP2537\Example 1\COMP2537_Demo_Code_1\public\img1.jpeg">`);
+        res.send(html + `<img src ='./public/img1.jpeg  >`);
     }
     else if (randomNumber == 2) {
         res.send(html + `<img src="./public/img2.jpg">`);
