@@ -207,10 +207,10 @@ app.get('/logout', (req, res) => {
 });
 
 app.get("/members", (req, res) => {
-    if (!req.session.authenticated) {
-        res.redirect('/signup');
-        return;
-    }
+    // if (!req.session.authenticated) {
+    //     res.redirect('/signup');
+    //     return;
+    // }
     console.log(req.session)
 
     const possibleValues = [1, 2, 3];
