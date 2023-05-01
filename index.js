@@ -15,6 +15,7 @@ const Joi = require("joi");
 
 
 const expireTime = 60 * 60 * 1000; 
+var checklogin = false;
 
 /* secret information section */
 const mongodb_host = process.env.MONGODB_HOST;
@@ -49,10 +50,9 @@ app.use(session({
     resave: true
 }
 ));
-req.session.checklogin = false;
 
 app.get('/', (req, res) => {
-    if (req.session.checklogin) {
+    if (checklogin) {
         res.redirect("/loggedin")
     } else {
         let signup = "<a href='/signup'><button type='button' style='display: block'>Sign up</button></a>";
@@ -170,7 +170,7 @@ app.post('/loggingin', async (req, res) => {
         req.session.cookie.maxAge = expireTime;
 
 
-        req.session.checklogin = true;
+        checklogin = true;
         res.redirect('/loggedIn');
         return;
     }
